@@ -968,6 +968,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				local itemInfo = sharedItems[fromItemData.name:lower()]
 				AddToStash(stashId, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
 			else
+				-- drop
 				toInventory = tonumber(toInventory)
 				if toInventory == nil or toInventory == 0 then
 					CreateNewDrop(src, fromSlot, toSlot, fromAmount)
