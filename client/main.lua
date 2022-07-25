@@ -9,7 +9,6 @@ local Drops = {}
 local CurrentDrop = nil
 local DropsNear = {}
 local CurrentVehicle = nil
-local CurrentGlovebox = nil
 local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
@@ -250,10 +249,6 @@ RegisterNetEvent('inventory:client:CheckOpenState', function(type, id, label)
         if name ~= CurrentVehicle or CurrentVehicle == nil then
             TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
         end
-    elseif type == "glovebox" then
-        if name ~= CurrentGlovebox or CurrentGlovebox == nil then
-            TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
-        end
     elseif type == "drop" then
         if name ~= CurrentDrop or CurrentDrop == nil then
             TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
@@ -483,7 +478,6 @@ CreateThread(function()
 
 					if IsPedInAnyVehicle(ped) then
 						local vehicle = GetVehiclePedIsIn(ped, false)
-						CurrentGlovebox = exports['qbr-core']:GetPlate(vehicle)
 						curVeh = vehicle
 						CurrentVehicle = nil
 					else
@@ -495,7 +489,6 @@ CreateThread(function()
 								if GetVehicleDoorLockStatus(vehicle) < 2 then
 									CurrentVehicle = exports['qbr-core']:GetPlate(vehicle)
 									curVeh = vehicle
-									CurrentGlovebox = nil
 								else
 									exports['qbr-core']:Notify(9, Lang:t("error.veh_locked"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
 									return
@@ -556,8 +549,6 @@ CreateThread(function()
 						}
 						TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
 						OpenTrunk()
-					elseif CurrentGlovebox ~= nil then
-						TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
 					elseif CurrentDrop ~= 0 then
 						TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
 					elseif VendingMachine ~= nil then
@@ -684,7 +675,6 @@ RegisterNUICallback("CloseInventory", function()
     if currentOtherInventory == "none-inv" then
         CurrentDrop = nil
         CurrentVehicle = nil
-        CurrentGlovebox = nil
         CurrentStash = nil
         SetNuiFocus(false, false)
         inInventory = false
@@ -695,9 +685,6 @@ RegisterNUICallback("CloseInventory", function()
         CloseTrunk()
         TriggerServerEvent("inventory:server:SaveInventory", "trunk", CurrentVehicle)
         CurrentVehicle = nil
-    elseif CurrentGlovebox ~= nil then
-        TriggerServerEvent("inventory:server:SaveInventory", "glovebox", CurrentGlovebox)
-        CurrentGlovebox = nil
     elseif CurrentStash ~= nil then
         TriggerServerEvent("inventory:server:SaveInventory", "stash", CurrentStash)
         CurrentStash = nil
@@ -835,31 +822,6 @@ CreateThread(function()
             DropsNear = {}
         end
         Wait(500)
-    end
-end)
-
-CreateThread(function()
-    while true do
-        local sleep = 1000
-        if LocalPlayer.state['isLoggedIn'] then
-            local pos = GetEntityCoords(PlayerPedId())
-            local craftObject = GetClosestObjectOfType(pos, 2.0, -1718655749 , false, false, false)
-            if craftObject ~= 0 then
-                local objectPos = GetEntityCoords(craftObject)
-                if #(pos - objectPos) < 1.5 then
-                    sleep = 0
-                    DrawText3Ds(objectPos.x, objectPos.y, objectPos.z + 1.0, "~d~E~s~ - "..Lang:t("info.craft"))
-                    if IsControlJustReleased(0, 0xCEFD9220) then
-                        local crafting = {}
-                        crafting.label = Lang:t("info.craft_label")
-                        crafting.items = GetThresholdItems()
-                        TriggerServerEvent("inventory:server:OpenInventory", "crafting", math.random(1, 99), crafting)
-                        sleep = 100
-                    end
-                end
-            end
-        end
-        Wait(sleep)
     end
 end)
 
