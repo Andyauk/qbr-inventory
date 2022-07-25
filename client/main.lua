@@ -474,33 +474,6 @@ CreateThread(function()
 					local curVeh = nil
 					local VendingMachine = GetClosestVending()
 
-					-- Is Player In Vehicle
-
-					if IsPedInAnyVehicle(ped) then
-						local vehicle = GetVehiclePedIsIn(ped, false)
-						curVeh = vehicle
-						CurrentVehicle = nil
-					else
-						local vehicle = exports['qbr-core']:GetClosestVehicle()
-						if vehicle ~= 0 and vehicle ~= nil then
-							local pos = GetEntityCoords(ped)
-							local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
-							if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-								if GetVehicleDoorLockStatus(vehicle) < 2 then
-									CurrentVehicle = exports['qbr-core']:GetPlate(vehicle)
-									curVeh = vehicle
-								else
-									exports['qbr-core']:Notify(9, Lang:t("error.veh_locked"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-									return
-								end
-							else
-								CurrentVehicle = nil
-							end
-						else
-							CurrentVehicle = nil
-						end
-					end
-
 					-- Trunk
 
 					if CurrentVehicle ~= nil then
