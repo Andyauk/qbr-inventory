@@ -40,7 +40,7 @@ p { margin: 0 !important; }
 }
 
 ::placeholder {
-    color: white;
+    color: #f2d8cc;
     text-align: center;
     line-height: 48px;
     text-transform: normal;
@@ -68,25 +68,25 @@ input[type=number]::-webkit-outer-spin-button {
     width: 134.6%;
     margin-left: 0%;
     margin-top: 6.3%;
-    background-color: rgb(39 39 49);
+    background-color: rgba(203, 112, 56, 0.2);
 }
 
 #progressbar-other {
     width: 134.8%;
     margin-left: -1.5%;
     margin-top: 6.3%;
-    background-color: rgb(39 39 49);
+    background-color: rgba(203, 112, 56, 0.2);
 }
 
 .pro {
-    background: linear-gradient(to right, #0fffd5, #0b9a82 500px);
+    background: linear-gradient(to right, rgba(203, 112, 56, 0.25), #cf7239 500px);
     height: 10px;
     max-width: 100%;
     transition: width 1s, background-color 1s;
 }
 
 .pro1 {
-    background: linear-gradient(to right, #0fffd5, #0b9a82 500px);
+    background: linear-gradient(to right, rgba(203, 112, 56, 0.25), #cf7239 500px);
     height: 10px;
     max-width: 100%;
     transition: width 1s, background-color 1s;
@@ -143,7 +143,7 @@ body {
     max-width: 41%;
     height: 75%;
     max-height: 81%;
-    background: rgb(35 34 56 / 80%);
+    background: rgba(80, 69, 68, 0.8);
 }
 
 .player-inventory {
@@ -170,7 +170,7 @@ body {
     max-width: 41%;
     height: 75%;
     max-height: 81%;
-    background: rgb(35 34 56 / 80%);
+    background: rgba(80, 69, 68, 0.8);
 }
 
 .other-inventory {
@@ -197,7 +197,7 @@ body {
 .player-inventory > .item-slot > .item-slot-key > p {
     position: absolute;
     font-weight: 400;
-    color: hsl(0deg 0% 0% / 15%);
+    color: rgba(80, 69, 68, 0.3);
     padding-top: 5.7vh;
     padding-bottom: 0px;
     padding-left: 3.95vh;
@@ -214,7 +214,7 @@ body {
     padding-bottom: 15px;
     height: auto;
     margin: 16% auto;
-    background: rgb(35 34 56 / 80%);
+    background: rgba(80, 69, 68, 0.8);
     right: 0px;
     width: 11%;
     left: 3vh;
@@ -235,14 +235,14 @@ body {
     width: 13.5vh;
     height: 13vh;
     float: left;
-    border: 1px solid rgba(255, 255, 255, 0.02);
-    background-color: rgb(102 102 113 / 30%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.25) !important;
     margin: 2px;
     transition: opacity 0.2s ease 0s;
 }
 
 .item-slot:hover {
-    background-color: rgb(48 48 56 / 30%) !important;
+    background-color: rgba(114, 59, 48, 0.25) !important;
 }
 
 .inv-option-item {
@@ -257,7 +257,7 @@ body {
 }
 
 #item-amount {
-    color: white;
+    color: #f2d8cc;
     text-align: center;
     font-size: 1.5vh;
     font-weight: 300;
@@ -279,7 +279,7 @@ body {
 .ammo-info-header {
     /* background-color: rgba(5, 5, 5, 0.5); */
     width: 100%;
-    color: white;
+    color: #f2d8cc;
     font-family: 'Roboto', sans-serif !important;
     background-color: rgba(0, 0, 0, 0.192);
     font-size: 1.vh;
@@ -288,7 +288,7 @@ body {
 }
 .ammo-info {
     position: relative;
-    color: white;
+    color: #f2d8cc;
     font-family: 'Roboto', sans-serif !important;
     font-weight: 200;
     font-size: 1.vh;
@@ -303,7 +303,7 @@ body {
 }
 
 .inv-option-item > p {
-    color: white;
+    color: #f2d8cc;
     text-align: center;
     line-height: 48px;
     text-transform: normal;
@@ -317,9 +317,9 @@ body {
     width: 100%;
     height: 50px;
     margin-left: 0%;
-    background-color: #646475 !important;
+    background-color: #504544 !important;
     border: none;
-    color: white;
+    color: #f2d8cc;
     transition: background-color .1s linear;
     border-radius: 0px!important;
 }
@@ -332,7 +332,7 @@ body {
 }
 
 .inv-option-item:hover {
-    background-color: #5c5c6c;
+    background-color: #504544;
 }
 
 .btn-combine {
@@ -341,7 +341,7 @@ body {
     width: auto;
     top: 0px;
     left: 0px;
-    background-color: #646475 !important;
+    background-color: #504544 !important;
     text-align: center;
     line-height: 48px;
     font-size: 1.2vh;
@@ -356,7 +356,7 @@ body {
 }
 
 .btn-combine > p {
-    color: white;
+    color: #f2d8cc;
     text-align: center;
     font-size: 1.5vh;
     font-weight: 300;
@@ -372,7 +372,7 @@ body {
 }
 
 .item-slot-amount > p {
-    color: #ffffff;
+    color: #f2d8cc;
     text-align: right;
     font-size: 1.25vh;
     font-weight: 400;
@@ -390,7 +390,7 @@ body {
 }
 
 .item-slot-name > p {
-    color: #ffffff;
+    color: #f2d8cc;
     text-align: right;
     font-size: 1.25vh;
     font-weight: 400;
@@ -408,7 +408,7 @@ body {
     font-weight: 400;
     padding: 2.5px;
     padding-left: 5px;
-    color: white;
+    color: #f2d8cc;
     font-size: 1.3vh;
     text-align: left;
     letter-spacing: 0px;
@@ -431,7 +431,7 @@ body {
     position: absolute;
     width: 0%;
     height: 150%;
-    background-color: #0fffd5;
+    background-color: #cf7239;
     z-index: 1;
 }
 
@@ -486,7 +486,7 @@ body {
 
 #player-inv-label {
     position: relative;
-    color: white;
+    color: #f2d8cc;
     font-size: 20px;
     font-family: 'Roboto', sans-serif !important;
     font-weight: 600;
@@ -500,7 +500,7 @@ body {
 
 #player-inv-weight {
     position: relative;
-    color: rgb(255, 255, 255);
+    color: rgb(242, 216, 204);
     font-size: 16px;
     font-weight: 900;
     font-family: 'Roboto', sans-serif !important;
@@ -512,7 +512,7 @@ body {
 
 #other-inv-label {
     position: relative;
-    color: white;
+    color: #f2d8cc;
     font-size: 20px;
     font-family: 'Roboto', sans-serif !important;
     font-weight: 600;
@@ -527,7 +527,7 @@ body {
 
 #other-inv-weight {
     position: relative;
-    color: rgb(255, 255, 255);
+    color: #f2d8cc;
     font-size: 16px;
     font-weight: 900;
     font-family: 'Roboto', sans-serif !important;
@@ -545,7 +545,7 @@ body {
 }
 
 .player-inv-weight > p {
-    color: white;
+    color: #f2d8cc;
     font-size: 12px;
     font-family: 'Roboto', sans-serif !important;
 }
@@ -559,9 +559,9 @@ body {
 }
 
 .ply-iteminfo-container {
-    background: rgba(35, 34, 56, 0.90);
+    background: rgba(80, 69, 68, 0.8);
     border-radius: 3px;
-    color: rgba(220, 220, 220, 1);
+    color: #f2d8cc;
     border: 1px solid rgba(255, 255, 255, 0.02);
     font-size: 1.35vh;
     font-weight: 0;
@@ -586,7 +586,7 @@ body {
     font-size: 2.4vh;
     letter-spacing: 0.3px;
     line-height: 1;
-    color: white;
+    color: #f2d8cc;
     font-family: 'Roboto', sans-serif !important;
     padding-top: 5px;
     padding-left: 5px;
@@ -607,7 +607,7 @@ body {
     line-height: 1.1;
     letter-spacing: 0.3px;
     font-family: 'Roboto', sans-serif !important;
-    color: white;
+    color: #f2d8cc;
     padding-left: 5px;
     padding-top: .5vh;
 }
@@ -635,12 +635,12 @@ body {
     margin-right: 1vh;
     width: 10vh;
     height: 11vh;
-    background: rgba(35, 34, 56, 0.95);
+    background: rgba(80, 69, 68, 0.95);
 }
 
 #itembox-action {
     position: absolute;
-    color: white;
+    color: #f2d8cc;
     border-top-left-radius: 1px;
     padding: 4px;
     top: 0;
@@ -660,7 +660,7 @@ body {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background-color: #0fffd5;
+    background-color: #cf7239;
     height: 0.3vh;
 }
 
@@ -673,7 +673,7 @@ body {
 #itembox-label > p {
     padding-left: 15px;
     padding-right: 15px;
-    color: #ffffff;
+    color: #f2d8cc;
     font-size: 14px;
     text-align: center;
     top: -25px;
@@ -700,14 +700,14 @@ body {
     height: 11vh;
     float: left;
     margin-left: 20px;
-    background: rgba(35, 34, 56, 0.95);
+    background: rgba(80, 69, 68, 0.95);
 }
 
 #requiredItem-action {
     position: absolute;
     left: 0;
     top: 0;
-    color: white;
+    color: #f2d8cc;
     padding: 3px;
     font-size: 14px;
     font-family: 'Roboto', sans-serif !important;
@@ -717,12 +717,12 @@ body {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background-color: #0fffd5;
+    background-color: #cf7239;
     height: 0.3vh;
 }
 
 #requiredItem-label > p {
-    color: #ffffff;
+    color: #f2d8cc;
     font-size: 14px;
     text-align: center;
     top: -25px;
@@ -780,7 +780,7 @@ body {
     margin: 3px;
     transition: opacity 0.2s;
     opacity: 1.0;
-    background: rgba(35, 34, 56, 0.95);
+    background: rgba(80, 69, 68, 0.95);
     z-index: 9999;
 }
 
@@ -791,7 +791,7 @@ body {
 }
 
 .z-hotbar-item-slot-amount > p {
-    color: #ffffff;
+    color: #f2d8cc;
     text-align: left;
     font-size: 14px;
 }
@@ -807,7 +807,7 @@ body {
 }
 
 .z-hotbar-item-slot-amount-name > p {
-    color: #ffffff;
+    color: #f2d8cc;
     text-align: right;
     font-size: 14px;
 }
@@ -822,7 +822,7 @@ body {
 }
 
 .z-hotbar-item-slot-label > p {
-    color: rgb(247, 247, 247);
+    color: rgb(242, 216, 204);
     font-size: 11.5px;
     text-align: center;
     text-transform: lowercase;
@@ -864,7 +864,7 @@ body {
     height: 5vh;
     background-color: rgba(120, 10, 20, 0.5);
     text-align: center;
-    color: rgba(216, 216, 216, 0.897);
+    color: rgba(242, 216, 204, 0.95);
 }
 
 .ammo-container-header > i {
@@ -892,7 +892,7 @@ body {
 
 .ammo-box > span {
     position: absolute;
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(242, 216, 204, 0.95);
     font-size: .93vh;
     bottom: 0;
     right: 0;
@@ -938,7 +938,7 @@ body {
     position: absolute;
     margin: 5vh;
     font-size: 3vh;
-    color: rgb(255, 255, 255);
+    color: rgb(242, 216, 204);
     font-family: 'Roboto', sans-serif !important;
 }
 
@@ -947,7 +947,7 @@ body {
     margin: 5vh;
     top: 5vh;
     font-size: 1.7vh;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(242, 216, 204, 0.8);
     font-family: 'Roboto', sans-serif !important;
 }
 
@@ -956,7 +956,7 @@ body {
     margin: 5vh;
     top: 9vh;
     font-size: 1.4vh;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(242, 216, 204, 0.8);
     font-family: 'Roboto', sans-serif !important;
 }
 
@@ -970,7 +970,7 @@ body {
 .weapon-attachments-container-detail-durability-total {
     height: 100%;
     width: 50%;
-    background-color: #0fffd5;
+    background-color: #cf7239;
 }
 
 .weapon-attachments-container-image {
@@ -996,7 +996,7 @@ body {
     bottom: 14vh;
     left: 0;
     margin: 5vh;
-    color: rgba(255, 255, 255, 0.8);
+    color: #f2d8cc;
     font-family: 'Roboto', sans-serif !important;
     font-size: 1.4vh
 }
@@ -1006,7 +1006,7 @@ body {
     height: 12.5vh;
     width: 10.5vh;
     background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgb(75, 75, 75);
+    border: 1px solid #504544;
     margin-right: 1vh;
     float: left;
     transition: .05s linear;
@@ -1014,7 +1014,7 @@ body {
 
 .weapon-attachment:hover {
     background-color: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgb(29, 29, 29);
+    border: 1px solid #504544;
     transition: .05s linear;
 }
 
@@ -1027,7 +1027,7 @@ body {
 }
 
 .weapon-attachment-label > p {
-    color: #ffffff;
+    color: #f2d8cc;
     font-size: 1.1vh;
     text-align: center;
     text-transform: uppercase;
@@ -1064,7 +1064,7 @@ body {
     right: 0;
     bottom: 20vh;
     text-align: center;
-    color: white;
+    color: #f2d8cc;
     font-size: 2vh;
     transition: background-color .05s linear;
 }
@@ -1078,7 +1078,7 @@ body {
 }
 
 .weapon-attachments-remove-hover {
-    background-color: #0fffd5;
+    background-color: #cf7239;
 }
 
 .weapon-dragging-class {
@@ -1111,7 +1111,7 @@ body {
     border-radius: 1px;
     text-align: center;
     line-height: 6vh;
-    color: white;
+    color: #f2d8cc;
     font-family: 'Roboto', sans-serif !important;
     transition: .05s linear;
 }
