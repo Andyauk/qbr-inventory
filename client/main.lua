@@ -14,6 +14,7 @@ local isCrafting = false
 local isHotbar = false
 local itemInfos = {}
 local weaponsOut = {}
+local currentRicXBoat = nil
 
 -- Functions
 
@@ -458,6 +459,10 @@ RegisterNetEvent('inventory:client:SetCurrentStash', function(stash)
     CurrentStash = stash
 end)
 
+RegisterNetEvent('ricx_boats:register_current_boat', function(id)
+    currentRicXBoat = id
+end)
+
 -- Commands
 
 RegisterCommand('closeinv', function()
@@ -476,7 +481,7 @@ CreateThread(function()
 
 					-- Is Player In Vehicle
 
-					if IsPedInAnyVehicle(ped) then
+					--[[ if IsPedInAnyVehicle(ped) then
 						local vehicle = GetVehiclePedIsIn(ped, false)
 						curVeh = vehicle
 						CurrentVehicle = nil
@@ -499,7 +504,7 @@ CreateThread(function()
 						else
 							CurrentVehicle = nil
 						end
-					end
+					end ]]
 
 					-- Trunk
 
@@ -681,10 +686,13 @@ RegisterNUICallback("CloseInventory", function()
         ClearPedTasks(PlayerPedId())
         return
     end
-    if CurrentVehicle ~= nil then
+    if CurrentVehicle ~= nil and currentRicXBoat == nil then
         CloseTrunk()
         TriggerServerEvent("inventory:server:SaveInventory", "trunk", CurrentVehicle)
         CurrentVehicle = nil
+    elseif currentRicXBoat then 
+        TriggerServerEvent("inventory:server:SaveInventory", "trunk", currentRicXBoat)
+        currentRicXBoat = nil
     elseif CurrentStash ~= nil then
         TriggerServerEvent("inventory:server:SaveInventory", "stash", CurrentStash)
         CurrentStash = nil
