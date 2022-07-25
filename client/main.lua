@@ -14,7 +14,6 @@ local isCrafting = false
 local isHotbar = false
 local itemInfos = {}
 local weaponsOut = {}
-local currentRicXBoat = nil
 
 -- Functions
 
@@ -459,10 +458,6 @@ RegisterNetEvent('inventory:client:SetCurrentStash', function(stash)
     CurrentStash = stash
 end)
 
-RegisterNetEvent('ricx_boats:register_current_boat', function(id)
-    currentRicXBoat = id
-end)
-
 -- Commands
 
 RegisterCommand('closeinv', function()
@@ -478,33 +473,6 @@ CreateThread(function()
 					local ped = PlayerPedId()
 					local curVeh = nil
 					local VendingMachine = GetClosestVending()
-
-					-- Is Player In Vehicle
-
-					--[[ if IsPedInAnyVehicle(ped) then
-						local vehicle = GetVehiclePedIsIn(ped, false)
-						curVeh = vehicle
-						CurrentVehicle = nil
-					else
-						local vehicle = exports['qbr-core']:GetClosestVehicle()
-						if vehicle ~= 0 and vehicle ~= nil then
-							local pos = GetEntityCoords(ped)
-							local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
-							if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-								if GetVehicleDoorLockStatus(vehicle) < 2 then
-									CurrentVehicle = exports['qbr-core']:GetPlate(vehicle)
-									curVeh = vehicle
-								else
-									exports['qbr-core']:Notify(9, Lang:t("error.veh_locked"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-									return
-								end
-							else
-								CurrentVehicle = nil
-							end
-						else
-							CurrentVehicle = nil
-						end
-					end ]]
 
 					-- Trunk
 
@@ -686,13 +654,10 @@ RegisterNUICallback("CloseInventory", function()
         ClearPedTasks(PlayerPedId())
         return
     end
-    if CurrentVehicle ~= nil and currentRicXBoat == nil then
+    if CurrentVehicle ~= nil then
         CloseTrunk()
         TriggerServerEvent("inventory:server:SaveInventory", "trunk", CurrentVehicle)
         CurrentVehicle = nil
-    elseif currentRicXBoat then 
-        TriggerServerEvent("inventory:server:SaveInventory", "trunk", currentRicXBoat)
-        currentRicXBoat = nil
     elseif CurrentStash ~= nil then
         TriggerServerEvent("inventory:server:SaveInventory", "stash", CurrentStash)
         CurrentStash = nil
