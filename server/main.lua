@@ -6,6 +6,7 @@ local ShopItems = {}
 local sharedItems = exports['qbr-core']:GetItems()
 -- Functions
 
+
 local function recipeContains(recipe, fromItem)
 	for k, v in pairs(recipe.accept) do
 		if v == fromItem.name then
