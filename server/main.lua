@@ -1,7 +1,6 @@
 -- Variables
 local Drops = {}
 local Trunks = {}
-local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
 local sharedItems = exports['qbr-core']:GetItems()
@@ -305,127 +304,6 @@ local function RemoveFromTrunk(plate, slot, itemName, amount)
 	end
 end
 
--- Glovebox items
-local function GetOwnedVehicleGloveboxItems(plate)
-	local items = {}
-	local result = exports.oxmysql:scalarSync('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
-	if result then
-		local gloveboxItems = json.decode(result)
-		if gloveboxItems then
-			for k, item in pairs(gloveboxItems) do
-				local itemInfo = sharedItems[item.name:lower()]
-				if itemInfo then
-					items[item.slot] = {
-						name = itemInfo["name"],
-						amount = tonumber(item.amount),
-						info = item.info or "",
-						label = itemInfo["label"],
-						description = itemInfo["description"] or "",
-						weight = itemInfo["weight"],
-						type = itemInfo["type"],
-						unique = itemInfo["unique"],
-						useable = itemInfo["useable"],
-						image = itemInfo["image"],
-						slot = item.slot,
-					}
-				end
-			end
-		end
-	end
-	return items
-end
-
-local function SaveOwnedGloveboxItems(plate, items)
-	if Gloveboxes[plate].label ~= Lang:t("info.glove_none") then
-		if items ~= nil then
-			for slot, item in pairs(items) do
-				item.description = nil
-			end
-			exports.oxmysql:insert('INSERT INTO gloveboxitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
-				['plate'] = plate,
-				['items'] = json.encode(items)
-			})
-			Gloveboxes[plate].isOpen = false
-		end
-	end
-end
-
-local function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
-	local amount = tonumber(amount)
-	local ItemData = sharedItems[itemName]
-
-	if not ItemData.unique then
-		if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
-			Gloveboxes[plate].items[slot].amount = Gloveboxes[plate].items[slot].amount + amount
-		else
-			local itemInfo = sharedItems[itemName:lower()]
-			Gloveboxes[plate].items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
-	else
-		if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
-			local itemInfo = sharedItems[itemName:lower()]
-			Gloveboxes[plate].items[otherslot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = otherslot,
-			}
-		else
-			local itemInfo = sharedItems[itemName:lower()]
-			Gloveboxes[plate].items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
-	end
-end
-
-local function RemoveFromGlovebox(plate, slot, itemName, amount)
-	if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
-		if Gloveboxes[plate].items[slot].amount > amount then
-			Gloveboxes[plate].items[slot].amount = Gloveboxes[plate].items[slot].amount - amount
-		else
-			Gloveboxes[plate].items[slot] = nil
-			if next(Gloveboxes[plate].items) == nil then
-				Gloveboxes[plate].items = {}
-			end
-		end
-	else
-		Gloveboxes[plate].items[slot]= nil
-		if Gloveboxes[plate].items == nil then
-			Gloveboxes[plate].items[slot] = nil
-		end
-	end
-end
-
 -- Drop items
 local function AddToDrop(dropId, slot, itemName, amount, info)
 	local amount = tonumber(amount)
@@ -590,8 +468,6 @@ RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 			Stashes[id].isOpen = false
 		elseif type == "trunk" then
 			Trunks[id].isOpen = false
-		elseif type == "glovebox" then
-			Gloveboxes[id].isOpen = false
 		elseif type == "drop" then
 			Drops[id].isOpen = false
 		end
@@ -691,47 +567,6 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 						end
 					end
 				end
-			elseif name == "glovebox" then
-				if Gloveboxes[id] then
-					if Gloveboxes[id].isOpen then
-						local Target = exports['qbr-core']:GetPlayer(Gloveboxes[id].isOpen)
-						if Target then
-							TriggerClientEvent('inventory:client:CheckOpenState', Gloveboxes[id].isOpen, name, id, Gloveboxes[id].label)
-						else
-							Gloveboxes[id].isOpen = false
-						end
-					end
-				end
-				secondInv.name = "glovebox-"..id
-				secondInv.label = Lang:t("info.glovebox")..id
-				secondInv.maxweight = 10000
-				secondInv.inventory = {}
-				secondInv.slots = 5
-				if Gloveboxes[id] and Gloveboxes[id].isOpen then
-					secondInv.name = "none-inv"
-					secondInv.label = "Glovebox-None"
-					secondInv.maxweight = 10000
-					secondInv.inventory = {}
-					secondInv.slots = 0
-				else
-					local ownedItems = GetOwnedVehicleGloveboxItems(id)
-					if Gloveboxes[id] and not Gloveboxes[id].isOpen then
-						secondInv.inventory = Gloveboxes[id].items
-						Gloveboxes[id].isOpen = src
-						Gloveboxes[id].label = secondInv.label
-					elseif IsVehicleOwned(id) and next(ownedItems) then
-						secondInv.inventory = ownedItems
-						Gloveboxes[id] = {}
-						Gloveboxes[id].items = ownedItems
-						Gloveboxes[id].isOpen = src
-						Gloveboxes[id].label = secondInv.label
-					else
-						Gloveboxes[id] = {}
-						Gloveboxes[id].items = {}
-						Gloveboxes[id].isOpen = src
-						Gloveboxes[id].label = secondInv.label
-					end
-				end
 			elseif name == "shop" then
 				secondInv.name = "itemshop-"..id
 				secondInv.label = other.label
@@ -808,12 +643,6 @@ RegisterNetEvent('inventory:server:SaveInventory', function(type, id)
 			SaveOwnedVehicleItems(id, Trunks[id].items)
 		else
 			Trunks[id].isOpen = false
-		end
-	elseif type == "glovebox" then
-		if (IsVehicleOwned(id)) then
-			SaveOwnedGloveboxItems(id, Gloveboxes[id].items)
-		else
-			Gloveboxes[id].isOpen = false
 		end
 	elseif type == "stash" then
 		SaveStashItems(id, Stashes[id].items)
@@ -929,25 +758,6 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				end
 				local itemInfo = sharedItems[fromItemData.name:lower()]
 				AddToTrunk(plate, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
-			elseif exports['qbr-core']:SplitStr(toInventory, "-")[1] == "glovebox" then
-				local plate = exports['qbr-core']:SplitStr(toInventory, "-")[2]
-				local toItemData = Gloveboxes[plate].items[toSlot]
-				Player.Functions.RemoveItem(fromItemData.name, fromAmount, fromSlot)
-				TriggerClientEvent("inventory:client:CheckWeapon", src, fromItemData.name)
-				if toItemData ~= nil then
-					local itemInfo = sharedItems[toItemData.name:lower()]
-					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						RemoveFromGlovebox(plate, fromSlot, itemInfo["name"], toAmount)
-						Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
-						TriggerEvent("qbr-log:server:CreateLog", "glovebox", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - plate: *" .. plate .. "*")
-					end
-				else
-					local itemInfo = sharedItems[fromItemData.name:lower()]
-					TriggerEvent("qbr-log:server:CreateLog", "glovebox", "Dropped Item", "red", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) dropped new item; name: **"..itemInfo["name"].."**, amount: **" .. fromAmount .. "** - plate: *" .. plate .. "*")
-				end
-				local itemInfo = sharedItems[fromItemData.name:lower()]
-				AddToGlovebox(plate, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
 			elseif exports['qbr-core']:SplitStr(toInventory, "-")[1] == "stash" then
 				local stashId = exports['qbr-core']:SplitStr(toInventory, "-")[2]
 				local toItemData = Stashes[stashId].items[toSlot]
@@ -968,7 +778,6 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				local itemInfo = sharedItems[fromItemData.name:lower()]
 				AddToStash(stashId, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
 			else
-				-- drop
 				toInventory = tonumber(toInventory)
 				if toInventory == nil or toInventory == 0 then
 					CreateNewDrop(src, fromSlot, toSlot, fromAmount)
@@ -1068,7 +877,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				RemoveFromTrunk(plate, fromSlot, itemInfo["name"], fromAmount)
 				if toItemData ~= nil then
 					local itemInfo = sharedItems[toItemData.name:lower()]
-						local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
+					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
 					if toItemData.name ~= fromItemData.name then
 						local itemInfo = sharedItems[toItemData.name:lower()]
 						RemoveFromTrunk(plate, toSlot, itemInfo["name"], toAmount)
@@ -1078,48 +887,6 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				end
 				local itemInfo = sharedItems[fromItemData.name:lower()]
 				AddToTrunk(plate, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
-			end
-		else
-			TriggerClientEvent("QBCore:Notify", src, Lang:t("error.not_exist"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-		end
-	elseif exports['qbr-core']:SplitStr(fromInventory, "-")[1] == "glovebox" then
-		local plate = exports['qbr-core']:SplitStr(fromInventory, "-")[2]
-		local fromItemData = Gloveboxes[plate].items[fromSlot]
-		local fromAmount = tonumber(fromAmount) ~= nil and tonumber(fromAmount) or fromItemData.amount
-		if fromItemData ~= nil and fromItemData.amount >= fromAmount then
-			local itemInfo = sharedItems[fromItemData.name:lower()]
-			if toInventory == "player" or toInventory == "hotbar" then
-				local toItemData = Player.Functions.GetItemBySlot(toSlot)
-				RemoveFromGlovebox(plate, fromSlot, itemInfo["name"], fromAmount)
-				if toItemData ~= nil then
-					local itemInfo = sharedItems[toItemData.name:lower()]
-					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						AddToGlovebox(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
-						TriggerEvent("qbr-log:server:CreateLog", "glovebox", "Swapped", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src..")* swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** plate: *" .. plate .. "*")
-					else
-						TriggerEvent("qbr-log:server:CreateLog", "glovebox", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from plate: *" .. plate .. "*")
-					end
-				else
-					TriggerEvent("qbr-log:server:CreateLog", "glovebox", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** plate: *" .. plate .. "*")
-				end
-				Player.Functions.AddItem(fromItemData.name, fromAmount, toSlot, fromItemData.info)
-			else
-				local toItemData = Gloveboxes[plate].items[toSlot]
-				RemoveFromGlovebox(plate, fromSlot, itemInfo["name"], fromAmount)
-				if toItemData ~= nil then
-					local itemInfo = sharedItems[toItemData.name:lower()]
-					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						local itemInfo = sharedItems[toItemData.name:lower()]
-						RemoveFromGlovebox(plate, toSlot, itemInfo["name"], toAmount)
-						AddToGlovebox(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
-					end
-				else
-				end
-				local itemInfo = sharedItems[fromItemData.name:lower()]
-				AddToGlovebox(plate, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
 			end
 		else
 			TriggerClientEvent("QBCore:Notify", src, Lang:t("error.not_exist"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
@@ -1350,7 +1117,7 @@ end)
 
 -- command
 
-exports['qbr-core']:AddCommand("resetinv", "Reset Inventory (Admin Only)", {{name="type", help="stash/trunk/glovebox"},{name="id/plate", help="ID of stash or license plate"}}, true, function(source, args)
+exports['qbr-core']:AddCommand("resetinv", "Reset Inventory (Admin Only)", {{name="type", help="stash/trunk"},{name="id/plate", help="ID of stash or license plate"}}, true, function(source, args)
 	local invType = args[1]:lower()
 	table.remove(args, 1)
 	local invId = table.concat(args, " ")
@@ -1358,10 +1125,6 @@ exports['qbr-core']:AddCommand("resetinv", "Reset Inventory (Admin Only)", {{nam
 		if invType == "trunk" then
 			if Trunks[invId] ~= nil then
 				Trunks[invId].isOpen = false
-			end
-		elseif invType == "glovebox" then
-			if Gloveboxes[invId] ~= nil then
-				Gloveboxes[invId].isOpen = false
 			end
 		elseif invType == "stash" then
 			if Stashes[invId] ~= nil then
