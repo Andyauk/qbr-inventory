@@ -5,7 +5,6 @@ local Stashes = {}
 local ShopItems = {}
 local sharedItems = exports['qbr-core']:GetItems()
 -- Functions
-
 local function recipeContains(recipe, fromItem)
 	for k, v in pairs(recipe.accept) do
 		if v == fromItem.name then
@@ -778,6 +777,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				local itemInfo = sharedItems[fromItemData.name:lower()]
 				AddToStash(stashId, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
 			else
+				-- drop
 				toInventory = tonumber(toInventory)
 				if toInventory == nil or toInventory == 0 then
 					CreateNewDrop(src, fromSlot, toSlot, fromAmount)

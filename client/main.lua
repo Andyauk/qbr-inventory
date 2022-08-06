@@ -17,21 +17,6 @@ local weaponsOut = {}
 
 -- Functions
 
-local function GetClosestVending()
-    local ped = PlayerPedId()
-    local pos = GetEntityCoords(ped)
-    local object = nil
-    for _, machine in pairs(Config.VendingObjects) do
-        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
-        if ClosestObject ~= 0 then
-            if object == nil then
-                object = ClosestObject
-            end
-        end
-    end
-    return object
-end
-
 function DrawText3Ds(x, y, z, text)
     local onScreen,_x,_y=GetScreenCoordFromWorldCoord(x, y, z)
 
@@ -256,7 +241,7 @@ RegisterNetEvent('inventory:client:CheckOpenState', function(type, id, label)
     end
 end)
 
-RegisterNetEvent('weapons:client:SetCurrentWeapon', function(data, bool)
+RegisterNetEvent('weapons:client:SetCurrentWeapon', function(data, _)
     CurrentWeaponData = data or {}
 end)
 
@@ -472,7 +457,6 @@ CreateThread(function()
 				if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
 					local ped = PlayerPedId()
 					local curVeh = nil
-					local VendingMachine = GetClosestVending()
 
 					-- Trunk
 
@@ -524,12 +508,6 @@ CreateThread(function()
 						OpenTrunk()
 					elseif CurrentDrop ~= 0 then
 						TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
-					elseif VendingMachine ~= nil then
-						local ShopItems = {}
-						ShopItems.label = "Vending Machine"
-						ShopItems.items = Config.VendingItem
-						ShopItems.slots = #Config.VendingItem
-						TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
 					else
 						TriggerServerEvent("inventory:server:OpenInventory")
 					end
@@ -796,31 +774,4 @@ CreateThread(function()
         end
         Wait(500)
     end
-end)
-
-CreateThread(function()
-	while true do
-		local pos = GetEntityCoords(PlayerPedId())
-		local inRange = false
-		local distance = #(pos - vector3(Config.AttachmentCraftingLocation.x, Config.AttachmentCraftingLocation.y, Config.AttachmentCraftingLocation.z))
-
-		if distance < 10 then
-			inRange = true
-			if distance < 1.5 then
-				DrawText3Ds(Config.AttachmentCraftingLocation.x, Config.AttachmentCraftingLocation.y, Config.AttachmentCraftingLocation.z, "~d~E~s~ - "..Lang:t("info.craft"))
-				if IsControlJustPressed(0, 0xCEFD9220) then
-					local crafting = {}
-					crafting.label = Lang:t("info.attatch_label")
-					crafting.items = GetAttachmentThresholdItems()
-					TriggerServerEvent("inventory:server:OpenInventory", "attachment_crafting", math.random(1, 99), crafting)
-				end
-			end
-		end
-
-		if not inRange then
-			Wait(1000)
-		end
-
-		Wait(3)
-	end
 end)
